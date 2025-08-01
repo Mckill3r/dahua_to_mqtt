@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  dahua_to_mqtt:
+    build: .
+    container_name: dahua_to_mqtt
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - DAHUA_HOST=192.168.x.x
+      - DAHUA_USERNAME=admin
+      - DAHUA_PASSWORD=xxxx
+      - MQTT_HOST=192.168.x.x
+      - MQTT_PORT=1883
+      - MQTT_USERNAME=mqtt_user
+      - MQTT_PASSWORD=mqtt_pass
+      - MQTT_TOPIC_PREFIX=DahuaVTO
+    volumes:
+      - ./logs:/app/logs
