@@ -1,33 +1,79 @@
 # Dahua MQTT Bridge
 
-Un conteneur Docker qui connecte les interphones Dahua VTO et publie leurs événements sur MQTT, idéal pour une intégration avec Home Assistant.
+Un conteneur Docker qui connecte un interphone vidéo **Dahua VTO** à un broker **MQTT**, idéal pour une intégration avec **Home Assistant** ou tout système domotique compatible MQTT.
 
 ## 🚀 Fonctionnalités
-- Connexion directe au flux `eventManager.cgi` de Dahua.
-- Publication des événements sur MQTT.
+- Écoute en temps réel du flux `eventManager.cgi` des interphones Dahua.
+- Publication des événements (appels, ouverture de porte, détection mouvement, etc.) sur des topics MQTT.
 - Commande d'ouverture de porte via MQTT (`DahuaVTO/Command/Open`).
+- Déploiement simple via **Docker Compose**.
 
 ## 🛠 Prérequis
-- Docker et Docker Compose
-- Broker MQTT (ex: Mosquitto)
-- Un interphone Dahua compatible HTTP API activée
+- Un **interphone Dahua VTO** compatible API HTTP activée.
+- Un broker **MQTT** fonctionnel (Mosquitto, EMQX, etc.).
+- **Docker** et **Docker Compose** installés.
 
 ## 🔧 Installation
-```bash
-git clone https://github.com/Mckill3r/dahua_to_mqtt
-cd dahua-mqtt
-docker-compose up -d --build
-```
+1. **Cloner le projet :**
+   ```bash
+   git clone https://github.com/<votre-compte>/dahua-mqtt.git
+   cd dahua-mqtt
+   ```
+2. **Modifier les variables d'environnement dans `docker-compose.yml` :**  
+   Avant de démarrer, éditez `docker-compose.yml` et adaptez les valeurs suivantes :
+   ```yaml
+   environment:
+     - DAHUA_HOST=192.168.x.x      # IP du VTO Dahua
+     - DAHUA_USERNAME=admin        # Identifiant Dahua
+     - DAHUA_PASSWORD=motdepasse   # Mot de passe Dahua
+     - MQTT_HOST=192.168.x.x       # IP du broker MQTT
+     - MQTT_PORT=1883              # Port MQTT (par défaut 1883)
+     - MQTT_USERNAME=mon_mqtt_user # (optionnel) Identifiant MQTT
+     - MQTT_PASSWORD=mon_mqtt_pass # (optionnel) Mot de passe MQTT
+     - MQTT_TOPIC_PREFIX=DahuaVTO  # Préfixe des topics MQTT
+   ```
+3. **Lancer le conteneur :**
+   ```bash
+   docker-compose up -d --build
+   ```
+4. **Vérifier les logs :**
+   ```bash
+   docker logs -f dahua_to_mqtt
+   ```
 
-## ⚙ Variables d'environnement
-- `DAHUA_HOST`: IP du VTO Dahua
-- `DAHUA_USERNAME` / `DAHUA_PASSWORD`: identifiants Dahua
-- `MQTT_HOST` / `MQTT_PORT`: broker MQTT
-- `MQTT_USERNAME` / `MQTT_PASSWORD`: identifiants MQTT
-- `MQTT_TOPIC_PREFIX`: préfixe pour les topics (par défaut: DahuaVTO)
+## 📡 Utilisation MQTT
+- **Événements :**  
+  Chaque événement du VTO est publié sur un topic du type :
+  ```
+  DahuaVTO/AccessControl
+  DahuaVTO/Invite
+  DahuaVTO/VideoMotion
+  ```
+  avec un payload JSON détaillé.
+
+- **Commande ouverture de porte :**  
+  Pour déclencher l'ouverture de la porte :
+  ```
+  Topic : DahuaVTO/Command/Open
+  Payload : (vide)
+  ```
 
 ## 🏠 Intégration Home Assistant
-Créer un `binary_sensor` MQTT basé sur les événements, ou utiliser des automatisations pour notifications.
+Ajouter un `binary_sensor` ou une automatisation MQTT :
+```yaml
+automation:
+  - alias: Notification appel VTO
+    trigger:
+      - platform: mqtt
+        topic: "DahuaVTO/Invite"
+    action:
+      - service: notify.mobile_app
+        data:
+          message: "Appel entrant sur le VTO Dahua"
+```
 
 ## 📜 Licence
-Projet sous licence MIT. Contributions bienvenues !
+Ce projet est sous licence **MIT** – libre utilisation et modification.
+
+## 🏷 Tags
+`mqtt`, `dahua`, `vto`, `home-assistant`, `docker`, `iot`, `smart-home`
