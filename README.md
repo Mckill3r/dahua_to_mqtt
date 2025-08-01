@@ -16,7 +16,7 @@ Un conteneur Docker qui connecte un interphone vidéo **Dahua VTO** à un broker
 ## 🔧 Installation
 1. **Cloner le projet :**
    ```bash
-   git clone https://github.com/<votre-compte>/dahua-mqtt.git
+   git clone https://github.com/Mckill3r/dahua_to_mqtt.git
    cd dahua-mqtt
    ```
 2. **Modifier les variables d'environnement dans `docker-compose.yml` :**  
