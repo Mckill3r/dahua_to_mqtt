@@ -14,7 +14,7 @@ Un conteneur Docker qui connecte les interphones Dahua VTO et publie leurs évé
 
 ## 🔧 Installation
 ```bash
-git clone https://github.com/votrecompte/dahua-mqtt.git
+git clone https://github.com/Mckill3r/dahua_to_mqtt
 cd dahua-mqtt
 docker-compose up -d --build
 ```
